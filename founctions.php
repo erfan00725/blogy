@@ -19,10 +19,10 @@ function isAuthorized(string $role = null): bool
 }
 
 function requireFields(array $fields) {
-    var_dump($_POST);
-    echo "<br>";
-    var_dump($_FILES);
-    echo "<br>";
+    // var_dump($_POST);
+    // echo "<br>";
+    // var_dump($_FILES);
+    // echo "<br>";
 
     if (empty($_FILES['image'])) {
         return false;

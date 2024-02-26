@@ -3,7 +3,7 @@
 function uploadImage(){
 
 $target_dir = "../uploads/";
-$target_file = $target_dir . "format_" . time(). "_" .basename($_FILES["image"]["name"]);
+$target_file = $target_dir . "format_" . dechex(time()). "_" .basename($_FILES["image"]["name"]);
 $uploadOk = 1;
 
 
@@ -12,7 +12,7 @@ $uploadOk = 1;
 if(isset($_POST["submit"])) {
   $check = getimagesize($_FILES["image"]["tmp_name"]);
   if($check !== false) {
-    echo "File is an image - " . $check["mime"] . ".";
+    // echo "File is an image - " . $check["mime"] . ".";
     $uploadOk = 1;
   } else {
     echo "File is not an image.";
@@ -43,7 +43,7 @@ if ($uploadOk == 0) {
 // if everything is ok, try to upload file
 } else {
   if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
-    echo "The file ". htmlspecialchars( basename( $_FILES["image"]["name"])). " has been uploaded.";
+    // echo "The file ". htmlspecialchars( basename( $_FILES["image"]["name"])). " has been uploaded.";
     return $target_file;
   } else {
     echo "Sorry, there was an error uploading your file.";

@@ -24,11 +24,16 @@ if (isset($_POST['submit'])) {
         $description = $_POST['description'];
         $writerID = $_POST['writer'];
 
-        $stmnt = $connection->prepare("INSERT INTO users (title, description, image-path) VALUES(:title, :description, :image-path)");
+        $stmnt = $connection->prepare("INSERT INTO posts (title, description, writer_id, image_path) VALUES(:title, :description, :writer_id, :image_path)");
 
         try {
-            $stmnt->execute(['title' => $title, "description" => $description, 'image-path' => $imageLocation]);
-            echo "somthings went wrong!";
+            $stmnt->execute([
+                'title' => $title,
+                'description' => $description,
+                'writer_id' => $writerID,
+                'image_path' => $imageLocation
+            ]);
+            echo "post saved!";
         } catch (\Throwable $th) {
             echo $th->getMessage();
         }
@@ -94,6 +99,7 @@ if (isset($_POST['submit'])) {
             <div class="form-group">
                 <label for="">select writer:</label>
                 <select name="writer" id="" class="form-control">
+                    <option value="<?= $_SESSION['id'] ?>"><?= $_SESSION['user'] ?></option>
                     <?php foreach ($writers as $writer): ?>
                         <option value="<?= $writer['id'] ?>"><?= $writer['user'] ?></option>
                     <?php endforeach; ?>
