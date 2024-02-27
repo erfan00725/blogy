@@ -1,11 +1,47 @@
 <?php 
 
-require_once "../founctions.php";
+require "../founctions.php";
+require_once "../config.php";
+require "../utility/uploadImage.php";
 
 sessionStart();
 
 if(!isAuthorized('writer')){
     header("Location: /index.php");
+}
+
+$stmnt = $connection->prepare("SELECT * FROM users WHERE role = :role");
+$stmnt->execute(['role' => 'writer']);
+$writers = $stmnt->fetchAll(PDO::FETCH_ASSOC);
+
+// var_dump($_SESSION);
+
+
+if (isset($_POST['submit'])) {
+    if (requireFields(['title','description'])) {
+        $imageLocation = uploadImage();
+        $title = $_POST['title'];
+        $description = $_POST['description'];
+        $writerID = $_SESSION['id'];
+
+        $stmnt = $connection->prepare("INSERT INTO posts (title, description, writer_id, image_path) VALUES(:title, :description, :writer_id, :image_path)");
+
+        try {
+            $stmnt->execute([
+                'title' => $title,
+                'description' => $description,
+                'writer_id' => $writerID,
+                'image_path' => $imageLocation
+            ]);
+            echo "post saved!";
+        } catch (\Throwable $th) {
+            echo $th->getMessage();
+        }
+
+
+    }else {
+        echo "all fields are required";
+    }
 }
 
 ?>
@@ -46,6 +82,9 @@ if(!isAuthorized('writer')){
         label{
             margin-bottom: 5px;
         }
+        .alert{
+            margin: 20px 100px;
+        }
     </style>
 </head>
 <body>
@@ -56,7 +95,8 @@ if(!isAuthorized('writer')){
             <h2>Write a post:</h2>
             <form method="post" enctype="multipart/form-data">
                 <div class="form-group">
-                    <input type="text" placeholder="title" class="form-control" name="title">
+                    <label for="title">title:</label>
+                    <input type="text" id="title" placeholder="title" class="form-control" name="title">
                 </div>
 
                 <div class="form-group">
@@ -78,6 +118,14 @@ if(!isAuthorized('writer')){
     <?php require "../partials/_footer.php"?>
 
     
+    <!-- Preloader -->
+    <div id="overlayer"></div>
+    <div class="loader">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading.</span>
+      </div>
+    </div>
+
     <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="/js/tiny-slider.js"></script>
 
